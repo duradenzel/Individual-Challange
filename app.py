@@ -1,56 +1,70 @@
-from flask import Flask, request, render_template
+from flask import Flask, render_template, request
 import joblib
-import numpy as np
-
-model = joblib.load('model.pkl')
+import datetime
+import csv
 
 app = Flask(__name__)
+model = joblib.load('model.pkl')
+
+# Define CSV file path
+DATA_FILE = 'user_inputs.csv'
+
+# Function to ensure the CSV file exists
+def initialize_csv(file_path):
+    try:
+        with open(file_path, mode='x', newline='') as file:
+            writer = csv.writer(file)
+            # Write header row
+            writer.writerow(['timestamp', 'hp', 'ac', 'size', 'can_fly', 'can_swim', 'legendary',
+                             'str', 'dex', 'con', 'int', 'wis', 'cha', 'predicted_cr'])
+    except FileExistsError:
+        pass  # File already exists, no need to do anything
+
+# Initialize the CSV file
+initialize_csv(DATA_FILE)
 
 @app.route('/')
 def index():
-    return render_template('index.html', prediction=None)
+    return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        size_mapping = {
-            "0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5
-        }
+        # Retrieve form inputs
+        hp = int(request.form['hp'])
+        ac = int(request.form['ac'])
+        size = int(request.form['size'])
+        can_fly = int(request.form['can_fly'])
+        can_swim = int(request.form['can_swim'])
+        legendary = int(request.form['legendary'])
+        strength = int(request.form['str'])
+        dexterity = int(request.form['dex'])
+        constitution = int(request.form['con'])
+        intelligence = int(request.form['int'])
+        wisdom = int(request.form['wis'])
+        charisma = int(request.form['cha'])
 
-        hp = float(request.form['hp'])
-        ac = float(request.form['ac'])
-        if hp <= 0 or ac <= 0:
-            raise ValueError("HP and AC must be positive values.")
-        
-        ability_scores = [
-            float(request.form['str']),
-            float(request.form['dex']),
-            float(request.form['con']),
-            float(request.form['int']),
-            float(request.form['wis']),
-            float(request.form['cha']),
-        ]
-        if any(score < 1 or score > 30 for score in ability_scores):
-            raise ValueError("Ability scores must be between 1 and 30.")
+        # Prepare input for the model
+        input_data = [[hp, ac, size, can_fly, can_swim, legendary, strength,
+                       dexterity, constitution, intelligence, wisdom, charisma]]
 
-        input_data = [
-            hp,
-            ac,
-            size_mapping[request.form['size']],
-            int(request.form['can_fly']),
-            int(request.form['can_swim']),
-            int(request.form['legendary']),
-            *ability_scores,
-        ]
+        # Predict CR
+        predicted_cr = round(model.predict(input_data)[0],2)
 
-        input_array = np.array([input_data])
+        # Get the current timestamp
+        timestamp = datetime.datetime.now().isoformat()
 
-        prediction = model.predict(input_array)[0]
-        return render_template('index.html', prediction=f'{prediction:.2f}')
+        # Save the input and prediction to the CSV file
+        with open(DATA_FILE, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([timestamp, hp, ac, size, can_fly, can_swim, legendary,
+                             strength, dexterity, constitution, intelligence, wisdom, charisma, predicted_cr])
 
-    except ValueError as e:
-        return render_template('index.html', prediction=f"Error: {str(e)}")
+        # Display result on the same page
+        return render_template('index.html', predicted_cr=predicted_cr)
 
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)

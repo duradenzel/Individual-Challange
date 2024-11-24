@@ -24,9 +24,9 @@
             <p><strong>Note: </strong>The prediction model has a typical deviation of ±1.56 CR units. This means the actual CR could be slightly higher or lower than the prediction.</p>
             
         </div>
-        {% if prediction is not none %}
+        {% if predicted_cr is not none %}
             <div class="result">
-                <p>The predicted Challenge Rating (CR) is: <strong>{{ prediction }}</strong></p>
+                <p>The predicted Challenge Rating (CR) is: <strong>{{ predicted_cr }}</strong></p>
             </div>
         {% endif %}
         <form action="/predict" method="post">
