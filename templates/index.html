@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster CR Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="intro-container">
+            <h2>D&D Monster CR Predictor</h2>
+            <p>
+                This application helps you estimate the Challenge Rating (CR) of a custom Dungeons & Dragons monster based on its key attributes. 
+                The Challenge Rating represents the difficulty level of a monster in combat, providing a valuable tool for Dungeon Masters to create balanced encounters.
+            </p>
+            <h3>How to Use:</h3>
+            <ol>
+                <li>Fill out the form below with your monster's stats. 
+                
+                <li>Click the <strong>"Predict CR"</strong> button to see the estimated Challenge Rating.</li>
+            </ol>
+            
+            <p><strong>Note: </strong>The prediction model has a typical deviation of ±1.56 CR units. This means the actual CR could be slightly higher or lower than the prediction.</p>
+            
+        </div>
+        {% if prediction is not none %}
+            <div class="result">
+                <p>The predicted Challenge Rating (CR) is: <strong>{{ prediction }}</strong></p>
+            </div>
+        {% endif %}
+        <form action="/predict" method="post">
+            <div class="input-group hp-ac">
+                <div>
+                    <label for="hp">Hit Points (HP):</label>
+                    <input type="number" id="hp" name="hp" min="1" required>
+                </div>
+                <div>
+                    <label for="ac">Armor Class (AC):</label>
+                    <input type="number" id="ac" name="ac" min="1" required>
+                </div>
+            </div>
+
+            <label for="size">Size:</label>
+            <select id="size" name="size" required>
+                <option value="0">Tiny</option>
+                <option value="1">Small</option>
+                <option value="2">Medium</option>
+                <option value="3">Large</option>
+                <option value="4">Huge</option>
+                <option value="5">Gargantuan</option>
+            </select><br><br>
+
+            <div class="input-group">
+                <div>
+                    <label for="can_fly">Can Fly:</label>
+                    <select id="can_fly" name="can_fly" required>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="can_swim">Can Swim:</label>
+                    <select id="can_swim" name="can_swim" required>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <label for="legendary">Legendary:</label>
+            <select id="legendary" name="legendary" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select><br><br>
+
+            <div class="input-group ability-scores">
+                <div>
+                    <label for="str">Strength:</label>
+                    <input type="number" id="str" name="str" min="1" max="30" required>
+                </div>
+                <div>
+                    <label for="dex">Dexterity:</label>
+                    <input type="number" id="dex" name="dex" min="1" max="30" required>
+                </div>
+                <div>
+                    <label for="con">Constitution:</label>
+                    <input type="number" id="con" name="con" min="1" max="30" required>
+                </div>
+            </div>
+            <div class="input-group ability-scores">
+                <div>
+                    <label for="int">Intelligence:</label>
+                    <input type="number" id="int" name="int" min="1" max="30" required>
+                </div>
+                <div>
+                    <label for="wis">Wisdom:</label>
+                    <input type="number" id="wis" name="wis" min="1" max="30" required>
+                </div>
+                <div>
+                    <label for="cha">Charisma:</label>
+                    <input type="number" id="cha" name="cha" min="1" max="30" required>
+                </div>
+            </div>
+
+            <button type="submit">Predict</button>
+        </form>
+    </div>
+</body>
+</html>
