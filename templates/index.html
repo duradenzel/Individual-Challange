@@ -12,7 +12,7 @@
             <h2>D&D Monster CR Predictor</h2>
             <p>
                 This application helps you estimate the Challenge Rating (CR) of a custom Dungeons & Dragons monster based on its key attributes. 
-                The Challenge Rating represents the difficulty level of a monster in combat, providing a valuable tool for Dungeon Masters to create balanced encounters.
+                The Challenge Rating represents the difficulty level of a monster in combat compared to the levels of the party,
             </p>
             <h3>How to Use:</h3>
             <ol>
@@ -20,9 +20,7 @@
                 
                 <li>Click the <strong>"Predict CR"</strong> button to see the estimated Challenge Rating.</li>
             </ol>
-            
-            <p><strong>Note: </strong>The prediction model has a typical deviation of ±1.56 CR units. This means the actual CR could be slightly higher or lower than the prediction.</p>
-            
+                        
         </div>
         {% if predicted_cr is not none %}
             <div class="result">
